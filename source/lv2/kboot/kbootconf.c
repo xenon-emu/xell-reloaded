@@ -28,6 +28,7 @@ see file COPYING or http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 #include "tftp/tftp.h"
 #include "kbootconf.h"
 #include "file.h"
+#include "config.h"
 
 int boot_entry;
 char conf_buf[MAX_KBOOTCONF_SIZE];
@@ -82,9 +83,9 @@ int kboot_loadfile(char *filename, int type)
 
 void kboot_set_config(void)
 {
-        
-        int setnetconfig = 0;
         static int oldvideomode = -1;
+#ifndef NO_NETWORKING
+        int setnetconfig = 0;
         ip_addr_t ipaddr, netmask, gateway, tftpserver;
         
 	if(conf.tftp_server != NULL)
@@ -120,7 +121,7 @@ void kboot_set_config(void)
            netif_set_up(&netif);
            network_print_config();
         }
-        
+#endif
         if(conf.videomode > VIDEO_MODE_AUTO && conf.videomode <= VIDEO_MODE_NTSC && oldvideomode != conf.videomode){
             oldvideomode = conf.videomode;
             xenos_init(conf.videomode);
@@ -133,14 +134,12 @@ void kboot_set_config(void)
 		xenon_make_it_faster(conf.speedup);
 	}
         
-        //printf("Background color: 0x%X, foreground color: 0x%X\n", console_color[0], console_color[1]);
-        
-        if(conf.bg_color != 0){
+        if(conf.bg_color != console_color[0]){
                 console_set_colors(conf.bg_color,console_color[1]);
                 printf("Set background color to 0x%X\n", conf.bg_color);
         }
         
-        if(conf.fg_color != 0){
+        if(conf.fg_color != console_color[1]){
                 console_set_colors(console_color[0],conf.fg_color);
                 printf("Set foreground color to 0x%X\n", conf.fg_color);
         }
@@ -446,8 +445,9 @@ int user_prompt(int defaultchoice, int max, int timeout) {
         old_ctrl=ctrl;
         redraw = 1;
         }
-
+#ifndef NO_NETWORKING
     network_poll();
+#endif
     usb_do_poll();
 
     if(old_default != defaultchoice)
