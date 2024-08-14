@@ -138,7 +138,7 @@ void kboot_set_config(void)
         }
         
         if(conf.fg_color != 0){
-                console_set_colors(console_color[0],conf.fg_color):
+                console_set_colors(console_color[0],conf.fg_color);
         }
         
 }
