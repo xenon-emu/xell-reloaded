@@ -75,9 +75,14 @@ int kboot_loadfile(char *filename, int type)
 	/* If filename includes ':' it's seen as valid mountname */
 	if(strrchr(filename,':')!= NULL)
 		ret = try_load_file(filename,type);
-	else
+	else {
+#ifndef NO_NETWORKING
 		ret = boot_tftp(boot_server_name(),filename,type);
-		
+#else
+		ret = -1;
+		printf("Failed to load file via tftp, as no_networking is defined. %s (%i)\n", filename, type);
+#endif
+	}
 	return ret;
 }
 
