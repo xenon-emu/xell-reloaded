@@ -39,7 +39,7 @@ void do_asciiart() {
     char *p = asciiart;
     while (*p)
 	    console_putch(*p++);
-    printf(asciitail);
+    printf("%s", asciitail);
 }
 
 void dumpana() {
@@ -213,7 +213,7 @@ int main(){
 	    }
     }
 
-    printf(FUSES);
+    printf("%s", FUSES);
 
     print_cpu_dvd_keys();
     print_serials();
