@@ -2,7 +2,7 @@
 
 if stage == 1 then
   stdenv.mkDerivation {
-    name = "xell";
+    name = "xell1";
     src = ./.;
     hardeningDisable = [ "stackprotector" "format" ];
     # CROSS is used by lv1 and must be 64bit
@@ -19,13 +19,17 @@ if stage == 1 then
       "xell-gggggg_cygnos_demon.bin"
     ];
     installPhase = ''
-      mkdir $out
+      mkdir -p $out/nix-support
       cp *.bin $out/
+      cd $out
+      for bin in *.bin; do
+        echo "file binary-dist $(realpath $bin)" >> $out/nix-support/hydra-build-products
+      done
     '';
   }
 else
 stdenv.mkDerivation {
-  name = "xell";
+  name = "xell2";
   inherit libxenon;
   buildInputs = [ libxenon fat ];
   nativeBuildInputs = [ stdenv32.cc ];
@@ -36,8 +40,6 @@ stdenv.mkDerivation {
   DEVKITXENON = "${libxenon}/devkitxenon";
   src = ./.;
   installPhase = ''
-    pwd
-    ls -lh
     mkdir $out
     cp -v stage2.elf* $out/
   '';
