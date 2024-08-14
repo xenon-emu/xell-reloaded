@@ -263,13 +263,17 @@ int main(){
     //}
     
     mount_all_devices();
+#ifndef NO_NETWORKING
     printf("\n * Looking for files on local media and TFTP...\n\n");
+#else
+    printf("\n * Looking for files on local media...\n\n");
+#endif
     for(;;){
 	    fileloop();
 #ifndef NO_NETWORKING
 	    tftp_loop(); //less likely to find something...
-#endif
 	    console_clrline();
+#endif
 	    usb_do_poll(); // Refresh USB
     }
 
