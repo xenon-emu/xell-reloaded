@@ -118,7 +118,7 @@ int main(){
 #elif defined DEFAULT_THEME
     console_set_colors(CONSOLE_COLOR_BLUE,CONSOLE_COLOR_WHITE); // White text on blue bg
 #elif defined VALI_THEME
-    console_set_colors(CONSOLE_COLOR_BLACK,CONSOLE_COLOR_WHITE);
+    console_set_colors(CONSOLE_COLOR_BLACK,CONSOLE_COLOR_WHITE); // White text on black bg
 #else
     console_set_colors(CONSOLE_COLOR_BLACK,CONSOLE_COLOR_GREEN); // Green text on black bg
 #endif

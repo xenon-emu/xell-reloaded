@@ -133,16 +133,16 @@ void kboot_set_config(void)
 		xenon_make_it_faster(conf.speedup);
 	}
         
-        printf("Background color: 0x%llX, foreground color: 0x%llX\n", console_color[0], console_color[1]);
+        printf("Background color: 0x%X, foreground color: 0x%X\n", console_color[0], console_color[1]);
         
         if(conf.bg_color != 0){
                 console_set_colors(conf.bg_color,console_color[1]);
-                printf("Set background color to 0x%llX\n", conf.bg_color);
+                printf("Set background color to 0x%X\n", conf.bg_color);
         }
         
         if(conf.fg_color != 0){
                 console_set_colors(console_color[0],conf.fg_color);
-                printf("Set foreground color to 0x%llX\n", conf.fg_color);
+                printf("Set foreground color to 0x%X\n", conf.fg_color);
         }
         
 }
