@@ -243,8 +243,10 @@ int main(){
     printf(" * 2BL LDV: %d\n", cbldvcount);
     printf(" * 6BL LDV: %d\n", fgldvcount);
     
+#ifndef NO_NETWORKING
     network_print_config();
-#endif
+#endif // NO_NETWORKING
+#endif // NO_PRINT_CONFIG
     /* Stop logging and save it to first USB Device found that is writeable */
     LogDeInit();
     //extern char device_list[STD_MAX][10];
@@ -264,7 +266,9 @@ int main(){
     printf("\n * Looking for files on local media and TFTP...\n\n");
     for(;;){
 	    fileloop();
+#ifndef NO_NETWORKING
 	    tftp_loop(); //less likely to find something...
+#endif
 	    console_clrline();
 	    usb_do_poll(); // Refresh USB
     }
