@@ -6,9 +6,10 @@
 /**
 *	Configuration
 **/
-#define DEFAULT_THEME
+//#define DEFAULT_THEME
 //#define SWIZZY_THEME
 //#define XTUDO_THEME
+#define VALI_THEME
 //#define NO_PRINT_CONFIG         //commented to display config
 //#define NO_NETWORKING		//commented to actually use networking...
 //#define NO_DVD				//commented to actually use the DVD...
