@@ -9,6 +9,8 @@ see file COPYING or http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 #ifndef KBOOTCONF_H
 #define KBOOTCONF_H
 
+#include <stdint.h>
+
 #define MAX_CMDLINE_SIZE 255
 #define MAX_KBOOTCONF_SIZE 16384
 #define MAX_KERNELS 64
@@ -31,6 +33,8 @@ struct kbootconf {
         char *ipaddress;
         char *netmask;
         char *gateway;
+        uint32_t fg_color;
+        uint32_t bg_color;
 	int default_idx;
 	int num_kernels;
 	struct kbootkernel kernels[MAX_KERNELS];

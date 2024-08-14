@@ -133,6 +133,14 @@ void kboot_set_config(void)
 		xenon_make_it_faster(conf.speedup);
 	}
         
+        if(conf.bg_color != 0){
+                console_set_colors(conf.bg_color,console_color[1]);
+        }
+        
+        if(conf.fg_color != 0){
+                console_set_colors(console_color[0],conf.fg_color):
+        }
+        
 }
 
 int kbootconf_parse(void)
@@ -203,6 +211,10 @@ int kbootconf_parse(void)
 			conf.netmask = right;
                 } else if (!strcmp(left, "gateway")) {
 			conf.gateway = right;
+                } else if (!strcmp(left, "bg_color")) {
+                        conf.bg_color = strtoul(right, NULL, 16);
+                } else if (!strcmp(left, "fg_color")) {
+                        conf.fg_color = strtoul(right, NULL, 16);
                 } else if (!strncmp(left, "#", 1)||!strncmp(left, ";", 1)) {
 			goto nextline;
 		} else {
