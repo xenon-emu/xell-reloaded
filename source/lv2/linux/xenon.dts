@@ -18,7 +18,7 @@
 /dts-v1/;
 
 / {
-	model = "Xenon Game Console";
+	model = "Microsoft Corporation Xbox 360";
 	compatible = "XENON";
 	#address-cells = <2>;
 	#size-cells = <1>;
