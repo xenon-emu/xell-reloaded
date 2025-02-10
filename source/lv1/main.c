@@ -314,43 +314,66 @@ int start(int pir, unsigned long hrmor, unsigned long pvr)
 	}
 	else
 	{
+		printf(" * Init SOC...\n");
 		init_soc();
 
 		printf(" * Attempting to wakeup all CPUs...\n");
 
 		// place startup code
 
-			// reset exception (odd threads startup)
+		printf(" * place_jump ...\n");
+
+		// reset exception (odd threads startup)
 		place_jump((void*)0x8000000000000100, other_threads_startup);
 
-			// copy startup code to on-chip RAM (even threads startup)
+		printf(" * copy startup code ...\n");
+
+		// copy startup code to on-chip RAM (even threads startup)
 		memcpy((void*)OCR_LAND_ADDR, other_threads_startup, other_threads_startup_end - other_threads_startup);
-		flush_code ((void*)OCR_LAND_ADDR, other_threads_startup_end - other_threads_startup);
+
+		printf(" * flush code ...\n");
+
+		flush_code((void*)OCR_LAND_ADDR, other_threads_startup_end - other_threads_startup);
 
 		// setup 1BL secondary hold addresses
 
 		void *sec_hold_addrs = (void*)0x800002000001ff80;
 
+                printf(" * setup 1bl secondary hold address ...\n");
+
+                printf(" * std1 ...\n");
 		std(sec_hold_addrs + 0x68, OCR_LAND_MAGIC);
+                printf(" * std2 ...\n");
 		std(sec_hold_addrs + 0x70, OCR_LAND_MAGIC);
+                printf(" * std3 ...\n");
 		std(sec_hold_addrs + 0x78, OCR_LAND_MAGIC);
 
 		// startup threads
 
+                printf(" * startup threads ...\n");
+
 		void *irq_cntrl = (void*)0x8000020000050000;
 
+                printf(" * std1 ...\n");
 		std(irq_cntrl + 0x2070, 0x7c);
+                printf(" * std2 ...\n");
 		std(irq_cntrl + 0x2008, 0);
+                printf(" * std3 ...\n");
 		std(irq_cntrl + 0x2000, 4);
 
+		printf(" * std4 ...\n");
 		std(irq_cntrl + 0x4070, 0x7c);
+                printf(" * std5 ...\n");
 		std(irq_cntrl + 0x4008, 0);
+                printf(" * std6 ...\n");
 		std(irq_cntrl + 0x4000, 0x10);
-
+                printf(" * std7 ...\n");
 		std(irq_cntrl + 0x10, 0x140078);
 
+                printf(" * mtspr ...\n");
 		mtspr(152, 0xc00000);  // CTRL.TE{0,1} = 11
 
+                printf(" * entering while loop ...\n");
 		while (get_online_processors() != 0x3f)
 		{
 			printf("CPUs online: %02x..\n", get_online_processors());

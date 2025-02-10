@@ -126,7 +126,7 @@ int main(){
 
     printf("\nXeLL RELOADED - Xenon Linux Loader 2nd Stage " LONGVERSION "\n");
     //printf("\nBuilt with GCC " GCC_VERSION " and Binutils " BINUTILS_VERSION " \n"); // User doesn't need to know this
-    do_asciiart();
+    //do_asciiart();
 
     //delay(3); //give the user a chance to see our splash screen <- network init should last long enough...
     
@@ -180,11 +180,11 @@ int main(){
     char *fusestr = FUSES;
     char *cbldvstr = CBLDV;
     char *fgldvstr = FGLDV;
-    
+
     for (i = 0; i < 12; ++i){
 	    u64 line;
 	    unsigned int hi,lo;
-	    
+
 	    line = xenon_secotp_read_line(i);
 	    hi=line >> 32;
 	    lo=line & 0xffffffff;
@@ -206,20 +206,20 @@ int main(){
         }
     }
 
-    
+
     for (i = 0; FGLDV[i] != '\0'; ++i) {
 	    if ('f' == FGLDV[i]) {
 		    ++fgldvcount;
 	    }
     }
-    
+
     printf(FUSES);
-    
+
     print_cpu_dvd_keys();
     print_serials();
-    
+
     printf(" * CPU PVR: %08x\n", mfspr(287));
-    
+
     if (xenon_get_console_type() == 0) {
 	    printf(" * Console: Xenon\n");
     } else if (xenon_get_console_type() == 1) {
@@ -239,10 +239,10 @@ int main(){
     } else if (xenon_get_console_type() == -1) {
 	    printf(" * Console: Unknown\n");
     }
-    
+
     printf(" * 2BL LDV: %d\n", cbldvcount);
     printf(" * 6BL LDV: %d\n", fgldvcount);
-    
+
 #ifndef NO_NETWORKING
     network_print_config();
 #endif // NO_NETWORKING

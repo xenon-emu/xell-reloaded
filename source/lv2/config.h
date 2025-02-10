@@ -10,13 +10,13 @@
 //#define SWIZZY_THEME
 //#define XTUDO_THEME
 #define VALI_THEME
-//#define NO_PRINT_CONFIG	//commented to display config
-#define NO_NETWORKING		//commented to actually use networking...
-#define NO_DVD			//commented to actually use the DVD...
+#define NO_PRINT_CONFIG
+#define NO_NETWORKING
+//#define NO_DVD
 
 /* Filesystem drivers */
 
-//#define FS_ISO9660
+#define FS_ISO9660
 #define FS_FAT
 //#define FS_EXT2FS
 //#define FS_XTAF
