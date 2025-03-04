@@ -32,18 +32,21 @@ CFLAGS	= -ffunction-sections -fdata-sections -g -Os -Wall $(MACHDEP) $(INCLUDE)
 CXXFLAGS	=	$(CFLAGS)
 ASFLAGS		=	-m32
 
-LDFLAGS	=	-g $(MACHDEP) -Wl,--gc-sections -Wl,-Map,$(notdir $@).map
+LDFLAGS	=	-g $(MACHDEP) -Wl,--gc-sections -Wl,-Map,$(notdir $@).map -lgcc
+LDFLAGS += $(libxenon)/powerpc-none-eabi/lib/crti.o
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:=	-lxenon -lm -lfat # -lext2fs -lntfs -lxtaf
+LIBS	:=	-lxenon -lm
+LIBS += -lfat
+# -lext2fs -lntfs -lxtaf
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:=
+LIBDIRS	:= $(libxenon)/powerpc-none-eabi/
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional

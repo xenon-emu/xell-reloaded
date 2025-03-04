@@ -1,4 +1,4 @@
-CROSS=xenon-
+CROSS ?= xenon-
 CC=$(CROSS)gcc
 OBJCOPY=$(CROSS)objcopy
 LD=$(CROSS)ld
@@ -26,8 +26,10 @@ OBJS =	$(LV1_DIR)/startup.o \
 
 TARGETS = xell-1f xell-2f xell-gggggg xell-gggggg_cygnos_demon xell-1f_cygnos_demon xell-2f_cygnos_demon
 
+all: stage2.elf32.gz
+
 # Build rules
-all: $(foreach name,$(TARGETS),$(addprefix $(name).,build))
+# all: $(foreach name,$(TARGETS),$(addprefix $(name).,build))
 
 .PHONY: clean %.build
 
@@ -54,6 +56,10 @@ dist: clean all
 	@echo Building $* ...
 	@$(MAKE) --no-print-directory $*.bin
 
+source/lv1/%.o: source/lv1/%.c
+source/lv1/startup.o: source/lv1/startup.S
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 .c.o:
 	@echo [$(notdir $<)]
 	@$(CC) $(CFLAGS) -c -o $@ $*.c
@@ -71,14 +77,13 @@ xell-1f_cygnos_demon.elf xell-2f_cygnos_demon.elf: CURRENT_TARGET = HACK_JTAG
 xell-1f_cygnos_demon.elf xell-2f_cygnos_demon.elf: CYGNOS_DEF = -DCYGNOS
 
 %.elf: $(LV1_DIR)/%.lds $(OBJS)
-	@$(CC) -n -T $< $(LDFLAGS) -o $@ $(OBJS)
+	$(CC) -n -T $< $(LDFLAGS) -o $@ $(OBJS)
 
-stage2.elf32.gz: FORCE
-	@rm -f $@
-	@rm -rf $(OBJS)
-	@$(MAKE) --no-print-directory -f Makefile_lv2.mk
-	@$(STRIP) stage2.elf32
-	@gzip -n9 stage2.elf32
+stage2.elf32.gz:
+	rm -f $@
+	$(MAKE) --no-print-directory -f Makefile_lv2.mk
+	$(STRIP) stage2.elf32
+	gzip -n9 stage2.elf32
 
 %.bin: %.elf stage2.elf32.gz
 # 256KB - 16KB of stage 2 - FOOTER bytes == 245744
@@ -89,5 +94,3 @@ stage2.elf32.gz: FORCE
 	@truncate --size=262128 $@ # 256k - footer size
 	@echo -n "xxxxxxxxxxxxxxxx" >> $@ # add footer
 	@dd if=stage2.elf32.gz of=$@ conv=notrunc bs=16384 seek=1 # inject stage2
-
-FORCE:
