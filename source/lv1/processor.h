@@ -3,7 +3,7 @@
 
 typedef struct
 {
-	unsigned long l, u;
+  unsigned long l, u;
 } tb_t;
 
 #define __stringify(rn) #rn
@@ -27,12 +27,12 @@ typedef struct
 #define mtspr(rn, v)  asm volatile("mtspr " __stringify(rn) ",%0" : : "r" (v))
 
 #define mftb(rval) ({unsigned long u; do { \
-	 asm volatile ("mftbu %0" : "=r" (u)); \
-	 asm volatile ("mftb %0" : "=r" ((rval)->l)); \
-	 asm volatile ("mftbu %0" : "=r" ((rval)->u)); \
-	 } while(u != ((rval)->u)); })
+   asm volatile ("mftbu %0" : "=r" (u)); \
+   asm volatile ("mftb %0" : "=r" ((rval)->l)); \
+   asm volatile ("mftbu %0" : "=r" ((rval)->u)); \
+   } while (u != ((rval)->u)); })
 
-	/* checkme */
+  /* checkme */
 #define TB_CLOCK  45000000
 
 #endif

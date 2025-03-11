@@ -1,8 +1,8 @@
 #ifndef _LINUX_STRING_H_
 #define _LINUX_STRING_H_
 
-#include <types.h>	/* for size_t */
-#include <stddef.h>	/* for NULL */
+#include <types.h>  /* for size_t */
+#include <stddef.h>  /* for NULL */
 
 #ifdef __cplusplus
 extern "C" {

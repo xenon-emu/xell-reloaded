@@ -1,10 +1,10 @@
 #ifndef CONFIG_H
-#define	CONFIG_H
+#define  CONFIG_H
 
 #define ELF_MAXSIZE (32*1024*1024)
 
 /**
-*	Configuration
+*  Configuration
 **/
 //#define DEFAULT_THEME
 //#define SWIZZY_THEME
@@ -26,5 +26,5 @@ void mount_all_devices();
 
 int findDevices();
 
-#endif	/* CONFIG_H */
+#endif  /* CONFIG_H */
 

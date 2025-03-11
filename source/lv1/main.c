@@ -38,66 +38,66 @@ void jump(unsigned long dtc, unsigned long kernel_base, unsigned long null, unsi
 
 static inline uint64_t ld(volatile void *addr)
 {
-	uint64_t l;
-	asm volatile ("ld %0, 0(%1)" : "=r" (l) : "b" (addr));
-	return l;
+  uint64_t l;
+  asm volatile ("ld %0, 0(%1)" : "=r" (l) : "b" (addr));
+  return l;
 }
 
 
 static inline void  std(volatile void *addr, uint64_t v)
 {
-	asm volatile ("std %1, 0(%0)" : : "b" (addr), "r" (v));
+  asm volatile ("std %1, 0(%0)" : : "b" (addr), "r" (v));
 }
 
 static inline uint32_t bswap_32(uint32_t t)
 {
-	return ((t & 0xFF) << 24) | ((t & 0xFF00) << 8) | ((t & 0xFF0000) >> 8) | ((t & 0xFF000000) >> 24);
+  return ((t & 0xFF) << 24) | ((t & 0xFF00) << 8) | ((t & 0xFF0000) >> 8) | ((t & 0xFF000000) >> 24);
 }
 
 static void putch(unsigned char c)
 {
-	while (!((*(volatile uint32_t*)0x80000200ea001018)&0x02000000));
-	*(volatile uint32_t*)0x80000200ea001014 = (c << 24) & 0xFF000000;
+  while (!((*(volatile uint32_t*)0x80000200ea001018)&0x02000000));
+  *(volatile uint32_t*)0x80000200ea001014 = (c << 24) & 0xFF000000;
 }
 
 int kbhit(void)
 {
-	uint32_t status;
-	
-	do
-		status = *(volatile uint32_t*)0x80000200ea001018;
-	while (status & ~0x03000000);
-	
-	return !!(status & 0x01000000);
+  uint32_t status;
+  
+  do
+    status = *(volatile uint32_t*)0x80000200ea001018;
+  while (status & ~0x03000000);
+  
+  return !!(status & 0x01000000);
 }
 
 int getchar(void)
 {
-	while (!kbhit());
-	return (*(volatile uint32_t*)0x80000200ea001010) >> 24;
+  while (!kbhit());
+  return (*(volatile uint32_t*)0x80000200ea001010) >> 24;
 }
 
 int putchar(int c)
 {
 #ifndef CYGNOS
-	if (c == '\n')
-		putch('\r');
+  if (c == '\n')
+    putch('\r');
 #endif
-	putch(c);
-	return 0;
+  putch(c);
+  return 0;
 }
 
 void putstring(const char *c)
 {
-	while (*c)
-		putchar(*c++);
+  while (*c)
+    putchar(*c++);
 }
 
 int puts(const char *c)
 {
-	putstring(c);
-	putstring("\n");
-	return 0;
+  putstring(c);
+  putstring("\n");
+  return 0;
 }
 
 /* e_ident */
@@ -108,128 +108,128 @@ int puts(const char *c)
 
 unsigned long load_elf_image(void *addr)
 {
-	Elf32_Ehdr *ehdr;
-	Elf32_Shdr *shdr;
-	unsigned char *strtab = 0;
-	int i;
+  Elf32_Ehdr *ehdr;
+  Elf32_Shdr *shdr;
+  unsigned char *strtab = 0;
+  int i;
 
-	ehdr = (Elf32_Ehdr *) addr;
-	
-	shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff + (ehdr->e_shstrndx * sizeof (Elf32_Shdr)));
+  ehdr = (Elf32_Ehdr *) addr;
+  
+  shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff + (ehdr->e_shstrndx * sizeof (Elf32_Shdr)));
 
-	if (shdr->sh_type == SHT_STRTAB)
-		strtab = (unsigned char *) (addr + shdr->sh_offset);
+  if (shdr->sh_type == SHT_STRTAB)
+    strtab = (unsigned char *) (addr + shdr->sh_offset);
 
-	for (i = 0; i < ehdr->e_shnum; ++i)
-	{
-		shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
-				(i * sizeof (Elf32_Shdr)));
+  for (i = 0; i < ehdr->e_shnum; ++i)
+  {
+    shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
+        (i * sizeof (Elf32_Shdr)));
 
-		if (!(shdr->sh_flags & SHF_ALLOC) || shdr->sh_size == 0)
-			continue;
+    if (!(shdr->sh_flags & SHF_ALLOC) || shdr->sh_size == 0)
+      continue;
 
-		if (strtab) {
-			printf("0x%08x 0x%08x, %sing %s...",
-				(int) shdr->sh_addr,
-				(int) shdr->sh_size,
-				(shdr->sh_type == SHT_NOBITS) ?
-					"Clear" : "Load",
-				&strtab[shdr->sh_name]);
-		}
+    if (strtab) {
+      printf("0x%08x 0x%08x, %sing %s...",
+        (int) shdr->sh_addr,
+        (int) shdr->sh_size,
+        (shdr->sh_type == SHT_NOBITS) ?
+          "Clear" : "Load",
+        &strtab[shdr->sh_name]);
+    }
 
-		void *target = (void*)(((unsigned long)0x8000000000000000UL) | shdr->sh_addr);
+    void *target = (void*)(((unsigned long)0x8000000000000000UL) | shdr->sh_addr);
 
-		if (shdr->sh_type == SHT_NOBITS) {
-			memset (target, 0, shdr->sh_size);
-		} else {
-			memcpy ((void *) target, 
-				(unsigned char *) addr + shdr->sh_offset,
-				shdr->sh_size);
-		}
-		flush_code (target, shdr->sh_size);
-		puts("done");
-	}
-	
-	return ehdr->e_entry;
+    if (shdr->sh_type == SHT_NOBITS) {
+      memset (target, 0, shdr->sh_size);
+    } else {
+      memcpy ((void *) target, 
+        (unsigned char *) addr + shdr->sh_offset,
+        shdr->sh_size);
+    }
+    flush_code (target, shdr->sh_size);
+    puts("done");
+  }
+  
+  return ehdr->e_entry;
 }
 
 void execute_elf_at(void *addr)
 {
-	printf(" * Loading ELF file...\n");
-	void *entry = (void*)load_elf_image(addr);
-	
-	printf(" * GO (entrypoint: %p)\n", entry);
+  printf(" * Loading ELF file...\n");
+  void *entry = (void*)load_elf_image(addr);
+  
+  printf(" * GO (entrypoint: %p)\n", entry);
 
-	secondary_hold_addr = ((long)entry) | 0x8000000000000060UL;
-	
-	jump(0, (long)entry, 0, (long)entry, 0);
+  secondary_hold_addr = ((long)entry) | 0x8000000000000060UL;
+  
+  jump(0, (long)entry, 0, (long)entry, 0);
 }
 
 int get_online_processors(void)
 {
-	int i;
-	int res = 0;
-	for (i=0; i<6; ++i)
-		if (processors_online[i])
-			res |= 1<<i;
-	return res;
+  int i;
+  int res = 0;
+  for (i=0; i<6; ++i)
+    if (processors_online[i])
+      res |= 1<<i;
+  return res;
 }
 
 void place_jump(void *addr, void *_target)
 {
-	unsigned long target = (unsigned long)_target;
-	dcache_flush(addr - 0x80, 0x100);
-	*(volatile uint32_t*)(addr - 0x18 + 0) = 0x3c600000 | ((target >> 48) & 0xFFFF);
-	*(volatile uint32_t*)(addr - 0x18 + 4) = 0x786307c6;
-	*(volatile uint32_t*)(addr - 0x18 + 8) = 0x64630000 | ((target >> 16) & 0xFFFF);
-	*(volatile uint32_t*)(addr - 0x18 + 0xc) = 0x60630000 | (target & 0xFFFF);
-	*(volatile uint32_t*)(addr - 0x18 + 0x10) = 0x7c6803a6;
-	*(volatile uint32_t*)(addr - 0x18 + 0x14) = 0x4e800021;
-	flush_code(addr-0x18, 0x18);
-	*(volatile uint32_t*)(addr + 0) = 0x4bffffe8;
-	flush_code(addr, 0x80);
+  unsigned long target = (unsigned long)_target;
+  dcache_flush(addr - 0x80, 0x100);
+  *(volatile uint32_t*)(addr - 0x18 + 0) = 0x3c600000 | ((target >> 48) & 0xFFFF);
+  *(volatile uint32_t*)(addr - 0x18 + 4) = 0x786307c6;
+  *(volatile uint32_t*)(addr - 0x18 + 8) = 0x64630000 | ((target >> 16) & 0xFFFF);
+  *(volatile uint32_t*)(addr - 0x18 + 0xc) = 0x60630000 | (target & 0xFFFF);
+  *(volatile uint32_t*)(addr - 0x18 + 0x10) = 0x7c6803a6;
+  *(volatile uint32_t*)(addr - 0x18 + 0x14) = 0x4e800021;
+  flush_code(addr-0x18, 0x18);
+  *(volatile uint32_t*)(addr + 0) = 0x4bffffe8;
+  flush_code(addr, 0x80);
 }
 
 void init_soc(void)
 {
-	void *soc_29 = (void*)0x8000020000030000;
-	void *soc_31 = (void*)0x8000020000040000;
-	void *soc_30 = (void*)0x8000020000060000;
-	void *soc_03 = (void*)0x8000020000048000;
+  void *soc_29 = (void*)0x8000020000030000;
+  void *soc_31 = (void*)0x8000020000040000;
+  void *soc_30 = (void*)0x8000020000060000;
+  void *soc_03 = (void*)0x8000020000048000;
 
-	u64 v;
+  u64 v;
 
-	v=ld(soc_31+0x3000);
-	v&=(((u64)-0x1a)<<42)|(((u64)-0x1a)>>22);
-	v|=(u64)3<<43;
-	std(soc_31+0x3000,v);
+  v=ld(soc_31+0x3000);
+  v&=(((u64)-0x1a)<<42)|(((u64)-0x1a)>>22);
+  v|=(u64)3<<43;
+  std(soc_31+0x3000,v);
 
-	std(soc_31+0x3110,(((u64)-2)<<46)|(((u64)-2)>>18));
+  std(soc_31+0x3110,(((u64)-2)<<46)|(((u64)-2)>>18));
 
-	std(soc_29+0x3110,(((u64)-2)<<41)|(((u64)-2)>>23));
+  std(soc_29+0x3110,(((u64)-2)<<41)|(((u64)-2)>>23));
 
-	v=ld(soc_30+0x700);
-	v|=(u64)7<<53;
-	std(soc_30+0x700,v);
+  v=ld(soc_30+0x700);
+  v|=(u64)7<<53;
+  std(soc_30+0x700,v);
 
-	v=ld(soc_30+0x840);
-	v&=(((u64)-2)<<46)|(((u64)-2)>>18);
-	v|=(u64)0xf<<42;
-	std(soc_30+0x840,v);
+  v=ld(soc_30+0x840);
+  v&=(((u64)-2)<<46)|(((u64)-2)>>18);
+  v|=(u64)0xf<<42;
+  std(soc_30+0x840,v);
 
-	v=ld(soc_31);
-	v&=((u64)0xffffffffFFFC7FC0<<46)|((u64)0xffffffffFFFC7FC0>>18);
-	v|=(u64)0x4009<<48;
-	std(soc_31,v);
+  v=ld(soc_31);
+  v&=((u64)0xffffffffFFFC7FC0<<46)|((u64)0xffffffffFFFC7FC0>>18);
+  v|=(u64)0x4009<<48;
+  std(soc_31,v);
 
-	v=ld(soc_03);
-	v&=(((u64)-0x30)<<57)|(((u64)-0x30)>>7);
-	v|=(u64)0x401<<46;
-	std(soc_03,v);
+  v=ld(soc_03);
+  v&=(((u64)-0x30)<<57)|(((u64)-0x30)>>7);
+  v|=(u64)0x401<<46;
+  std(soc_03,v);
 
-	v=ld(soc_29);
-	v|=(u64)1<<62;
-	std(soc_29,v);
+  v=ld(soc_29);
+  v|=(u64)1<<62;
+  std(soc_29,v);
 }
 
 void fix_hrmor();
@@ -239,175 +239,175 @@ int start_from_exploit=0;
 int start(int pir, unsigned long hrmor, unsigned long pvr)
 {
 
-	secondary_hold_addr = 0;
+  secondary_hold_addr = 0;
 
 #ifdef HACK_JTAG
-	//execption vector
-	int exc[] = {
-		EX_RESET, EX_MACHINE_CHECK, EX_DSI, EX_DATA_SEGMENT,
-		EX_ISI, EX_INSTRUCTION_SEGMENT, EX_INTERRUPT, EX_ALIGNMENT,
-		EX_PROGRAM, EX_FLOATING_POINT, EX_DECREMENTER, 0x980,
-		EX_SYSTEM_CALL, EX_TRACE, EX_PERFORMANCE, 0xF20,
-		EX_IABR, 0x1600, EX_THERMAL, 0x1800
-	};
+  //execption vector
+  int exc[] = {
+    EX_RESET, EX_MACHINE_CHECK, EX_DSI, EX_DATA_SEGMENT,
+    EX_ISI, EX_INSTRUCTION_SEGMENT, EX_INTERRUPT, EX_ALIGNMENT,
+    EX_PROGRAM, EX_FLOATING_POINT, EX_DECREMENTER, 0x980,
+    EX_SYSTEM_CALL, EX_TRACE, EX_PERFORMANCE, 0xF20,
+    EX_IABR, 0x1600, EX_THERMAL, 0x1800
+  };
 
-	int i;
+  int i;
 #endif
-		
-	/* initialize BSS first. DO NOT INSERT CODE BEFORE THIS! */
-	unsigned char *p = (unsigned char*)bss_start;
-	memset(p, 0, bss_end - bss_start);
+    
+  /* initialize BSS first. DO NOT INSERT CODE BEFORE THIS! */
+  unsigned char *p = (unsigned char*)bss_start;
+  memset(p, 0, bss_end - bss_start);
 
 #ifdef CYGNOS
-	/* set UART to 38400, 8, N, 1 */
-	*(volatile uint32_t*)0x80000200ea00101c = 0xae010000;
+  /* set UART to 38400, 8, N, 1 */
+  *(volatile uint32_t*)0x80000200ea00101c = 0xae010000;
 #else
-	/* set UART to 115400, 8, N, 1 */
-	*(volatile uint32_t*)0x80000200ea00101c = 0xe6010000;
+  /* set UART to 115400, 8, N, 1 */
+  *(volatile uint32_t*)0x80000200ea00101c = 0xe6010000;
 #endif
 
-	printf("\nXeLL - First stage\n");
+  printf("\nXeLL - First stage\n");
 
-	if(!wakeup_cpus)
-	{
+  if(!wakeup_cpus)
+  {
 #ifdef HACK_JTAG
-		printf(" * Attempting to catch all CPUs...\n");
+    printf(" * Attempting to catch all CPUs...\n");
 
-		// Place jumps in all of the exception vectors.
-		for (i=0; i<sizeof(exc)/sizeof(*exc); ++i)
-			place_jump((void*)hrmor + exc[i], start_from_rom);
+    // Place jumps in all of the exception vectors.
+    for (i=0; i<sizeof(exc)/sizeof(*exc); ++i)
+      place_jump((void*)hrmor + exc[i], start_from_rom);
 
 
-		printf(" * place_jump ...\n");
+    printf(" * place_jump ...\n");
 
-		// Program exception vector
-		place_jump((void*)0x8000000000000700, start_from_rom);
+    // Program exception vector
+    place_jump((void*)0x8000000000000700, start_from_rom);
 
-		printf(" * while ...\n");
+    printf(" * while ...\n");
 
-		while (get_online_processors() != 0x3f)
-		{
-			printf("CPUs online: %02x..\n", get_online_processors());
-			mdelay(10);
+    while (get_online_processors() != 0x3f)
+    {
+      printf("CPUs online: %02x..\n", get_online_processors());
+      mdelay(10);
 
-			for (i=1; i<6; ++i)
-			{
-				*(volatile uint64_t*)(0x8000020000050070ULL + i * 0x1000) = 0x7c;
-				*(volatile uint64_t*)(0x8000020000050068ULL + i * 0x1000) = 0;
-				(void)*(volatile uint64_t*)(0x8000020000050008ULL + i * 0x1000);
-				while (*(volatile uint64_t*)(0x8000020000050050ULL + i * 0x1000) != 0x7C);
-			}
+      for (i=1; i<6; ++i)
+      {
+        *(volatile uint64_t*)(0x8000020000050070ULL + i * 0x1000) = 0x7c;
+        *(volatile uint64_t*)(0x8000020000050068ULL + i * 0x1000) = 0;
+        (void)*(volatile uint64_t*)(0x8000020000050008ULL + i * 0x1000);
+        while (*(volatile uint64_t*)(0x8000020000050050ULL + i * 0x1000) != 0x7C);
+      }
 
-			// IPI request
-			*(uint64_t*)(0x8000020000052010ULL) = 0x3e0078;
-		}
+      // IPI request
+      *(uint64_t*)(0x8000020000052010ULL) = 0x3e0078;
+    }
 
-		fix_hrmor();
+    fix_hrmor();
 
-		/* re-reset interrupt controllers. especially, remove their pending IPI IRQs. */
-		for (i=1; i<6; ++i)
-		{
-			*(uint64_t*)(0x8000020000050068ULL + i * 0x1000) = 0x74;
-			while (*(volatile uint64_t*)(0x8000020000050050ULL + i * 0x1000) != 0x7C);
-		}
+    /* re-reset interrupt controllers. especially, remove their pending IPI IRQs. */
+    for (i=1; i<6; ++i)
+    {
+      *(uint64_t*)(0x8000020000050068ULL + i * 0x1000) = 0x74;
+      while (*(volatile uint64_t*)(0x8000020000050050ULL + i * 0x1000) != 0x7C);
+    }
 #endif
-	}
-	else
-	{
-		printf(" * Init SOC...\n");
-		init_soc();
+  }
+  else
+  {
+    printf(" * Init SOC...\n");
+    init_soc();
 
-		printf(" * Attempting to wakeup all CPUs...\n");
+    printf(" * Attempting to wakeup all CPUs...\n");
 
-		// place startup code
+    // place startup code
 
-		printf(" * place_jump ...\n");
+    printf(" * place_jump ...\n");
 
-		// reset exception (odd threads startup)
-		place_jump((void*)0x8000000000000100, other_threads_startup);
+    // reset exception (odd threads startup)
+    place_jump((void*)0x8000000000000100, other_threads_startup);
 
-		printf(" * copy startup code ...\n");
+    printf(" * copy startup code ...\n");
 
-		// copy startup code to on-chip RAM (even threads startup)
-		memcpy((void*)OCR_LAND_ADDR, other_threads_startup, other_threads_startup_end - other_threads_startup);
+    // copy startup code to on-chip RAM (even threads startup)
+    memcpy((void*)OCR_LAND_ADDR, other_threads_startup, other_threads_startup_end - other_threads_startup);
 
-		printf(" * flush code ...\n");
+    printf(" * flush code ...\n");
 
-		flush_code((void*)OCR_LAND_ADDR, other_threads_startup_end - other_threads_startup);
+    flush_code((void*)OCR_LAND_ADDR, other_threads_startup_end - other_threads_startup);
 
-		// setup 1BL secondary hold addresses
+    // setup 1BL secondary hold addresses
 
-		void *sec_hold_addrs = (void*)0x800002000001ff80;
+    void *sec_hold_addrs = (void*)0x800002000001ff80;
 
                 printf(" * setup 1bl secondary hold address ...\n");
 
                 printf(" * std1 ...\n");
-		std(sec_hold_addrs + 0x68, OCR_LAND_MAGIC);
+    std(sec_hold_addrs + 0x68, OCR_LAND_MAGIC);
                 printf(" * std2 ...\n");
-		std(sec_hold_addrs + 0x70, OCR_LAND_MAGIC);
+    std(sec_hold_addrs + 0x70, OCR_LAND_MAGIC);
                 printf(" * std3 ...\n");
-		std(sec_hold_addrs + 0x78, OCR_LAND_MAGIC);
+    std(sec_hold_addrs + 0x78, OCR_LAND_MAGIC);
 
-		// startup threads
+    // startup threads
 
                 printf(" * startup threads ...\n");
 
-		void *irq_cntrl = (void*)0x8000020000050000;
+    void *irq_cntrl = (void*)0x8000020000050000;
 
                 printf(" * std1 ...\n");
-		std(irq_cntrl + 0x2070, 0x7c);
+    std(irq_cntrl + 0x2070, 0x7c);
                 printf(" * std2 ...\n");
-		std(irq_cntrl + 0x2008, 0);
+    std(irq_cntrl + 0x2008, 0);
                 printf(" * std3 ...\n");
-		std(irq_cntrl + 0x2000, 4);
+    std(irq_cntrl + 0x2000, 4);
 
-		printf(" * std4 ...\n");
-		std(irq_cntrl + 0x4070, 0x7c);
+    printf(" * std4 ...\n");
+    std(irq_cntrl + 0x4070, 0x7c);
                 printf(" * std5 ...\n");
-		std(irq_cntrl + 0x4008, 0);
+    std(irq_cntrl + 0x4008, 0);
                 printf(" * std6 ...\n");
-		std(irq_cntrl + 0x4000, 0x10);
+    std(irq_cntrl + 0x4000, 0x10);
                 printf(" * std7 ...\n");
-		std(irq_cntrl + 0x10, 0x140078);
+    std(irq_cntrl + 0x10, 0x140078);
 
                 printf(" * mtspr ...\n");
-		mtspr(152, 0xc00000);  // CTRL.TE{0,1} = 11
+    mtspr(152, 0xc00000);  // CTRL.TE{0,1} = 11
 
                 printf(" * entering while loop ...\n");
-		while (get_online_processors() != 0x3f)
-		{
-			printf("CPUs online: %02x..\n", get_online_processors());
-			mdelay(10);
-		}
+    while (get_online_processors() != 0x3f)
+    {
+      printf("CPUs online: %02x..\n", get_online_processors());
+      mdelay(10);
+    }
 
-		// enable IRQ controllers
+    // enable IRQ controllers
 
-		int i;
-		for(i=0;i<6;i++){
-			std(irq_cntrl + i*0x1000 + 0x70, 0x7c);
-			std(irq_cntrl + i*0x1000 + 8, 0x7c);
-			std(irq_cntrl + i*0x1000, 1<<i); 
-		}
+    int i;
+    for(i=0;i<6;i++) {
+      std(irq_cntrl + i*0x1000 + 0x70, 0x7c);
+      std(irq_cntrl + i*0x1000 + 8, 0x7c);
+      std(irq_cntrl + i*0x1000, 1<<i); 
+    }
  
-	}
+  }
 
-	printf("CPUs online: %02x..\n", get_online_processors());
-	printf(" * success.\n");
+  printf("CPUs online: %02x..\n", get_online_processors());
+  printf(" * success.\n");
 
-	start_from_exploit=1;
+  start_from_exploit=1;
 
-	return main();
+  return main();
 }
 
 // fake setjmp implementation for puff
 
-void longjmp(jmp_buf jb,int retval){
-	printf("[ERROR] longjmp retval=%d\n",retval);
-	for(;;);
+void longjmp(jmp_buf jb,int retval) {
+  printf("[ERROR] longjmp retval=%d\n",retval);
+  for(;;);
 }
 
-int setjmp(jmp_buf jb){
-	return 0;
+int setjmp(jmp_buf jb) {
+  return 0;
 }
 
 static unsigned char * stage2 = (unsigned char *)_start+XELL_STAGE1_SIZE;
@@ -415,34 +415,34 @@ static unsigned char stage2_elf[1024*1024];
 
 int main() {
 
-	if (!start_from_exploit)
-		printf("\nXeLL - First stage\n");
+  if (!start_from_exploit)
+    printf("\nXeLL - First stage\n");
 
-	/* remove any characters left from bootup */
-	while (kbhit())
-		getchar();
+  /* remove any characters left from bootup */
+  while (kbhit())
+    getchar();
 
-	printf(" * Decompressing stage 2...\n");
+  printf(" * Decompressing stage 2...\n");
 
-	unsigned long destsize=sizeof(stage2_elf), srcsize=XELL_STAGE2_SIZE;
+  unsigned long destsize=sizeof(stage2_elf), srcsize=XELL_STAGE2_SIZE;
 
-	if (stage2[0]!=0x1f || stage2[1]!=0x8b || stage2[2]!=0x08 || stage2[3]!=0x00){
-		printf("[ERROR] bad gzip header\n");
-		goto end;
-	}
+  if (stage2[0]!=0x1f || stage2[1]!=0x8b || stage2[2]!=0x08 || stage2[3]!=0x00) {
+    printf("[ERROR] bad gzip header\n");
+    goto end;
+  }
 
-	int res=puff(stage2_elf,&destsize,&stage2[GZIP_HEADER_SIZE],&srcsize);
+  int res=puff(stage2_elf,&destsize,&stage2[GZIP_HEADER_SIZE],&srcsize);
 
-	if (res){
-		printf("[ERROR] decompression failed (srcsize=%ld destsize=%ld res=%d)\n",srcsize,destsize,res);
-		goto end;
-	}
+  if (res) {
+    printf("[ERROR] decompression failed (srcsize=%ld destsize=%ld res=%d)\n",srcsize,destsize,res);
+    goto end;
+  }
 
-	execute_elf_at(stage2_elf);
+  execute_elf_at(stage2_elf);
 
 end:
-	printf(" * looping...\n");
-	for(;;);
+  printf(" * looping...\n");
+  for(;;);
 
-	return 0;
+  return 0;
 }

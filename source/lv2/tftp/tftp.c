@@ -464,8 +464,8 @@ ip_addr_t boot_server_name() {
 
 char *boot_file_name() {
 #if 0
-	if (netif.dhcp && *netif.dhcp->boot_file_name)
-		return netif.dhcp->boot_file_name;
+  if (netif.dhcp && *netif.dhcp->boot_file_name)
+    return netif.dhcp->boot_file_name;
 #endif
 
   return "/tftpboot/xenon";

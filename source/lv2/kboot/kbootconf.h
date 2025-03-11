@@ -16,28 +16,28 @@ see file COPYING or http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 #define MAX_KERNELS 64
 
 struct kbootkernel {
-	char *label;
-	char *kernel;
-	char *initrd;
-	char *root;
+  char *label;
+  char *kernel;
+  char *initrd;
+  char *root;
         char *video;
-	char *parameters;
+  char *parameters;
 };
 
 struct kbootconf {
-	int timeout;
+  int timeout;
         int videomode;
-	int speedup;
-	char *msgfile;
+  int speedup;
+  char *msgfile;
         char *tftp_server;
         char *ipaddress;
         char *netmask;
         char *gateway;
         uint32_t fg_color;
         uint32_t bg_color;
-	int default_idx;
-	int num_kernels;
-	struct kbootkernel kernels[MAX_KERNELS];
+  int default_idx;
+  int num_kernels;
+  struct kbootkernel kernels[MAX_KERNELS];
 };
 
 int kbootconf_parse(void);

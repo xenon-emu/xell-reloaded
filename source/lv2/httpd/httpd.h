@@ -29,36 +29,36 @@ extern int httpd_do_std_header(struct http_state *http);
 
 struct httpd_handler
 {
-	int (*process_request)(struct http_state *http, const char *method, const char *url);
-	void (*process_header)(struct http_state *http, const char *option, const char *val);
-	void (*start_response)(struct http_state *http);
-	int (*do_header)(struct http_state *http);
-	int (*do_data)(struct http_state *http);
-	int (*process_data)(struct http_state *http, const void *data, int len); /* return != len *ONLY* in case you changed the state! */
-	void (*finish)(struct http_state *http);
+  int (*process_request)(struct http_state *http, const char *method, const char *url);
+  void (*process_header)(struct http_state *http, const char *option, const char *val);
+  void (*start_response)(struct http_state *http);
+  int (*do_header)(struct http_state *http);
+  int (*do_data)(struct http_state *http);
+  int (*process_data)(struct http_state *http, const void *data, int len); /* return != len *ONLY* in case you changed the state! */
+  void (*finish)(struct http_state *http);
 };
 
 extern struct httpd_handler http_handler[];
 
 struct http_state
 {
-	int state_server, state_client;
-	
-	int code;
-	char *code_descr;
-	int code_ex;
-	
-	char linebuffer[MAX_LINESIZE + 1];
-	int linebuffer_ptr;
-	
-	char sendbuffer[SENDBUFFER_LEN];
-	int sendbuffer_read, sendbuffer_write;
-	int std_header_state;
-	int retries;
-	int isserial;
-	
-	struct httpd_handler *handler;
-	void *response_priv;
+  int state_server, state_client;
+  
+  int code;
+  char *code_descr;
+  int code_ex;
+  
+  char linebuffer[MAX_LINESIZE + 1];
+  int linebuffer_ptr;
+  
+  char sendbuffer[SENDBUFFER_LEN];
+  int sendbuffer_read, sendbuffer_write;
+  int std_header_state;
+  int retries;
+  int isserial;
+  
+  struct httpd_handler *handler;
+  void *response_priv;
 };
 
 

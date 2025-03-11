@@ -96,7 +96,7 @@ int launch_file(void *addr, unsigned len, int filetype) {
   // This shit is broken!
   //     case TYPE_UPDXELL:
    //if (memcmp(addr + XELL_FOOTER_OFFSET, XELL_FOOTER, XELL_FOOTER_LENGTH) ||
-  // len != XELL_SIZE) 	return -1;
+  // len != XELL_SIZE)   return -1;
   //         printf(" * Loading UpdXeLL binary...\n");
   //         ret = updateXeLL(addr,len);
   //         break;
@@ -108,58 +108,58 @@ int launch_file(void *addr, unsigned len, int filetype) {
 
 int try_load_file(char *filename, int filetype)
 {
-	int ret;
-	if(filetype == TYPE_NANDIMAGE){
-		try_rawflash(filename);
-		return -1;
-	}
+  int ret;
+  if(filetype == TYPE_NANDIMAGE) {
+    try_rawflash(filename);
+    return -1;
+  }
 
-	if (filetype == TYPE_UPDXELL)
-	{
-		updateXeLL(filename);
-		return -1;
-	}
-	
-	wait_and_cleanup_line();
-	printf("Trying %s...\r",filename);
-	
-	struct stat s;
-	stat(filename, &s);
+  if (filetype == TYPE_UPDXELL)
+  {
+    updateXeLL(filename);
+    return -1;
+  }
+  
+  wait_and_cleanup_line();
+  printf("Trying %s...\r",filename);
+  
+  struct stat s;
+  stat(filename, &s);
 
-	long size = s.st_size;
+  long size = s.st_size;
 
-	if (size <= 0) 
-		return -1; //Size is invalid
+  if (size <= 0) 
+    return -1; //Size is invalid
 
-	int f = open(filename, O_RDONLY);
+  int f = open(filename, O_RDONLY);
 
-	if (f < 0)
-		return f; //File wasn't opened...
+  if (f < 0)
+    return f; //File wasn't opened...
 
-	void * buf=malloc(size);
+  void * buf=malloc(size);
 
-	printf("\n * '%s' found, loading %ld...\n",filename,size);
-	int r = read(f, buf, size);
-	if (r < 0)
-	{
-		close(f);
-		free(buf);
-		return r;
-	}
-	
-	if (filetype == TYPE_ELF) {
-		char * argv[] = {
-			filename,
-		};
-		int argc = sizeof (argv) / sizeof (char *);
-		
-		elf_setArgcArgv(argc, argv);
-	}
-	
-	ret = launch_file(buf,r,filetype);
+  printf("\n * '%s' found, loading %ld...\n",filename,size);
+  int r = read(f, buf, size);
+  if (r < 0)
+  {
+    close(f);
+    free(buf);
+    return r;
+  }
+  
+  if (filetype == TYPE_ELF) {
+    char * argv[] = {
+      filename,
+    };
+    int argc = sizeof (argv) / sizeof (char *);
+    
+    elf_setArgcArgv(argc, argv);
+  }
+  
+  ret = launch_file(buf,r,filetype);
 
-	free(buf);
-	return ret;
+  free(buf);
+  return ret;
 }
 
 void fileloop() {
@@ -168,46 +168,46 @@ void fileloop() {
         int i,j=0;
         for (i = 3; i < 16; i++) {
                 if (devoptab_list[i]->structSize) {
-                        do{
-							usb_do_poll();
-							if (!devoptab_list[i]->structSize)
-								break;
-							sprintf(filepath, "%s:/%s", devoptab_list[i]->name,filelist[j].filename);
-							if ((filelist[j].filetype == TYPE_UPDXELL || filelist[j].filetype == TYPE_NANDIMAGE) && (xenon_get_console_type() == REV_CORONA_PHISON))
-							{
-								wait_and_cleanup_line();
-								printf("MMC Console Detected! Skipping %s...\r", filepath);
-								j++;
-							}
-							else
-							{								
-								try_load_file(filepath,filelist[j].filetype);
-								j++;
-							}
-						} while(strcmp(filelist[j].filename, " "));
-						j = 0;
-				}
-		}
+                        do {
+              usb_do_poll();
+              if (!devoptab_list[i]->structSize)
+                break;
+              sprintf(filepath, "%s:/%s", devoptab_list[i]->name,filelist[j].filename);
+              if ((filelist[j].filetype == TYPE_UPDXELL || filelist[j].filetype == TYPE_NANDIMAGE) && (xenon_get_console_type() == REV_CORONA_PHISON))
+              {
+                wait_and_cleanup_line();
+                printf("MMC Console Detected! Skipping %s...\r", filepath);
+                j++;
+              }
+              else
+              {                
+                try_load_file(filepath,filelist[j].filetype);
+                j++;
+              }
+            } while (strcmp(filelist[j].filename, " "));
+            j = 0;
+        }
+    }
 }
 
 void tftp_loop() {
     int i=0;
-    do{
-		if ((filelist[i].filetype == TYPE_UPDXELL || filelist[i].filetype == TYPE_NANDIMAGE) && (xenon_get_console_type() == REV_CORONA_PHISON))
-		{
-			wait_and_cleanup_line();
-			printf("Skipping TFTP %s:%s... MMC Detected!\r", boot_server_name(),filelist[i].filename);
-			i++;
-		}
-		else
-		{
-			wait_and_cleanup_line();
-			printf("Trying TFTP %s:%s... \r",boot_server_name(),filelist[i].filename);
-			boot_tftp(boot_server_name(), filelist[i].filename, filelist[i].filetype);
-			i++;
-		}
-		network_poll();
-	} while(strcmp(filelist[i].filename, " "));
+    do {
+    if ((filelist[i].filetype == TYPE_UPDXELL || filelist[i].filetype == TYPE_NANDIMAGE) && (xenon_get_console_type() == REV_CORONA_PHISON))
+    {
+      wait_and_cleanup_line();
+      printf("Skipping TFTP %s:%s... MMC Detected!\r", boot_server_name(),filelist[i].filename);
+      i++;
+    }
+    else
+    {
+      wait_and_cleanup_line();
+      printf("Trying TFTP %s:%s... \r",boot_server_name(),filelist[i].filename);
+      boot_tftp(boot_server_name(), filelist[i].filename, filelist[i].filetype);
+      i++;
+    }
+    network_poll();
+  } while (strcmp(filelist[i].filename, " "));
     wait_and_cleanup_line();
     printf("Trying TFTP %s:%s...\r",boot_server_name(),boot_file_name());
     /* Assume that bootfile delivered via DHCP is an ELF */
