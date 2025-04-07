@@ -1,0 +1,95 @@
+{
+  "nodes": {
+    "libfat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1723662818,
+        "narHash": "sha256-2OAFk6M2naMufDYExGj6vDgZiYoTe4I3x22MQr811fI=",
+        "owner": "cleverca22",
+        "repo": "libfat",
+        "rev": "61d5af5607c2a797aeea56c3728531953cd64b0f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cleverca22",
+        "repo": "libfat",
+        "type": "github"
+      }
+    },
+    "libxenon": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1739181469,
+        "narHash": "sha256-0iDFE6lP0Br1b/aus48MxH7Wtaz81UpIgDp87fhqMuY=",
+        "owner": "cleverca22",
+        "repo": "libxenon",
+        "rev": "b340eb5646d7044e259d38b313af6096da56c4e1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cleverca22",
+        "repo": "libxenon",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1722820544,
+        "narHash": "sha256-gY7VS+RX8XZf72vKCzE7BsSqB/Kwv3HMu63zZ4p4OcE=",
+        "owner": "cleverca22",
+        "repo": "nixpkgs",
+        "rev": "0f0e39b3f992e33ed0bd7aecd37bf5d0702e7ceb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cleverca22",
+        "ref": "ugly-test",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs2": {
+      "locked": {
+        "lastModified": 1743827369,
+        "narHash": "sha256-rpqepOZ8Eo1zg+KJeWoq1HAOgoMCDloqv5r2EAa9TSA=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "42a1c966be226125b48c384171c44c651c236c22",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "libfat": "libfat",
+        "libxenon": "libxenon",
+        "nixpkgs": "nixpkgs",
+        "nixpkgs2": "nixpkgs2",
+        "xell": "xell"
+      }
+    },
+    "xell": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1739181446,
+        "narHash": "sha256-r86Btd8MV9uf/9VNAwYCec0K2TzgP7IpQmBBs6gAai4=",
+        "owner": "cleverca22",
+        "repo": "xell-reloaded",
+        "rev": "32f56785ef0fa6e5245af0933fab91cba2b7006b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cleverca22",
+        "repo": "xell-reloaded",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

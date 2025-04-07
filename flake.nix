@@ -1,7 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:cleverca22/nixpkgs/ugly-test";
-    nixpkgs2.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs";
     xell.url = "github:cleverca22/xell-reloaded";
     xell.flake = false;
     libxenon.url = "github:cleverca22/libxenon";
@@ -13,21 +12,20 @@
     extra-substituters = [ "https://hydra.angeldsis.com/" ];
     extra-trusted-public-keys = [ "hydra.angeldsis.com-1:7s6tP5et6L8Y6sX7XGIwzX5bnLp00MtUQ/1C9t1IBGE=" ];
   };
-  outputs = { self, nixpkgs, xell, libxenon, libfat, nixpkgs2 }:
+  outputs = { self, nixpkgs, xell, libxenon, libfat }:
   let
-    host = import nixpkgs { system = "x86_64-linux"; };
-    p = import nixpkgs {
+    pkgs = import nixpkgs {
       system = "x86_64-linux";
     };
     overlay32 = self: super: {
       libxenon = self.callPackage libxenon {};
       fat = self.callPackage libfat {};
-      xell2 = p.callPackage xell {
+      xell2 = pkgs.callPackage xell {
         inherit (self) fat libxenon;
         stdenv32 = self.stdenv;
         stage = 2;
       };
-      xell1 = p.callPackage xell {
+      xell1 = pkgs.callPackage xell {
         inherit (self) fat xell2 libxenon;
         stdenv32 = self.stdenv;
         stage = 1;
@@ -47,5 +45,6 @@
         inherit (pkgs32) libxenon fat xell1 xell2;
       };
     };
+    devShell = pkgs.xenon;
   };
 }
