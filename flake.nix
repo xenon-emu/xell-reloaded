@@ -1,50 +1,50 @@
 {
   inputs = {
+    utils.url = "github:numtide/flake-utils";
+    # to update: nix flake lock --update-input nixpkgs
     nixpkgs.url = "github:nixos/nixpkgs";
-    xell.url = "github:cleverca22/xell-reloaded";
-    xell.flake = false;
-    libxenon.url = "github:cleverca22/libxenon";
+    libxenon.url = "github:xenon-emu/libxenon";
     libxenon.flake = false;
-    libfat.url = "github:cleverca22/libfat";
+    libfat.url = "github:xenon-emu/libfat";
     libfat.flake = false;
   };
-  nixConfig = {
-    extra-substituters = [ "https://hydra.angeldsis.com/" ];
-    extra-trusted-public-keys = [ "hydra.angeldsis.com-1:7s6tP5et6L8Y6sX7XGIwzX5bnLp00MtUQ/1C9t1IBGE=" ];
-  };
-  outputs = { self, nixpkgs, xell, libxenon, libfat }:
+  outputs = { self, utils, nixpkgs, libxenon, libfat }:
+  (utils.lib.eachSystem [ "ppc64" "ppc32" ] (system:
   let
-    pkgs = import nixpkgs {
-      system = "x86_64-linux";
+    pkgsLut = {
+      ppc32 = import nixpkgs {
+        crossSystem = {
+            config = "powerpc-none-eabi";
+            libc = "newlib";
+        };
+        system = "x86_64-linux";
+        overlays = [ self.overlay ];
+      };
+      ppc64 = import nixpkgs {
+        crossSystem.config = "powerpc64-unknown-linux-gnuabielfv2";
+        system = "x86_64-linux";
+        overlays = [ self.overlay ];
+        config.allowUnsupportedSystem = true;
+      };
     };
-    overlay32 = self: super: {
+    pkgs = pkgsLut.${system};
+  in {
+    packages = {
+      inherit (pkgs) xell1 xell2;
+    };
+    devShell = pkgs.xell1;
+  })) // {
+    overlay = self: super: {
       libxenon = self.callPackage libxenon {};
       fat = self.callPackage libfat {};
-      xell2 = pkgs.callPackage xell {
+      xell2 = self.callPackage ./xell.nix {
         inherit (self) fat libxenon;
-        stdenv32 = self.stdenv;
         stage = 2;
       };
-      xell1 = pkgs.callPackage xell {
+      xell1 = self.callPackage ./xell.nix {
         inherit (self) fat xell2 libxenon;
-        stdenv32 = self.stdenv;
         stage = 1;
       };
     };
-    pkgs32 = import nixpkgs {
-      system = "x86_64-linux";
-      crossSystem = {
-        config = "powerpc-none-eabi";
-        libc = "newlib";
-      };
-      overlays = [ overlay32 ];
-    };
-  in {
-    packages = {
-      powerpc-none-eabi = {
-        inherit (pkgs32) libxenon fat xell1 xell2;
-      };
-    };
-    devShell = pkgs.xenon;
   };
 }
