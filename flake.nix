@@ -24,7 +24,6 @@
         crossSystem.config = "powerpc64-unknown-linux-gnuabielfv2";
         system = "x86_64-linux";
         overlays = [ self.overlay ];
-        config.allowUnsupportedSystem = true;
       };
     };
     pkgs = pkgsLut.${system};
