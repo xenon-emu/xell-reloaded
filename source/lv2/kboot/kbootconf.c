@@ -88,66 +88,65 @@ int kboot_loadfile(char *filename, int type)
 
 void kboot_set_config(void)
 {
-        static int oldvideomode = -1;
+    static int oldvideomode = -1;
 #ifndef NO_NETWORKING
-        int setnetconfig = 0;
-        ip_addr_t ipaddr, netmask, gateway, tftpserver;
-        
-	if(conf.tftp_server != NULL)
-		if (ipaddr_aton(conf.tftp_server,&tftpserver))
-			kboot_tftp = conf.tftp_server;
+    int setnetconfig = 0;
+    ip_addr_t ipaddr, netmask, gateway, tftpserver;
 
-        /* Only reinit network if IPs dont match which got set by kboot on previous try*/
-	if(conf.ipaddress != NULL)
-        	if (ipaddr_aton(conf.ipaddress,&ipaddr) && ip_addr_cmp(&oldipaddr,&ipaddr) == 0)
-        	{
-        	        printf(" * taking network down to set config values\n");
-        	        setnetconfig = 1;
-        	        netif_set_down(&netif);
-                
-        	        netif_set_ipaddr(&netif,&ipaddr);
-        	        ip_addr_set(&oldipaddr,&ipaddr);
-        	}
+	if (conf.tftp_server != NULL && ipaddr_aton(conf.tftp_server,&tftpserver))
+		kboot_tftp = conf.tftp_server;
 
-	if(conf.netmask != NULL)
-        	if (ipaddr_aton(conf.netmask,&netmask) && setnetconfig){
-        	        netif_set_netmask(&netif,&netmask);
-        	        ip_addr_set(&oldnetmask,&netmask);
-        	}
+    /* Only reinit network if IPs dont match which got set by kboot on previous try*/
+    if (conf.ipaddress != NULL && ipaddr_aton(conf.ipaddress,&ipaddr) && ip_addr_cmp(&oldipaddr,&ipaddr) == 0)
+    {
+        printf(" * taking network down to set config values\n");
+        setnetconfig = 1;
+        netif_set_down(&netif);
         
-	if(conf.gateway != NULL)
-        	if (ipaddr_aton(conf.gateway,&gateway) && setnetconfig){
-        	        netif_set_gw(&netif,&gateway);
-        	        ip_addr_set(&oldgateway,&gateway); 
-        	}
+        netif_set_ipaddr(&netif,&ipaddr);
+        ip_addr_set(&oldipaddr,&ipaddr);
+    }
+
+    if (conf.netmask != NULL && ipaddr_aton(conf.netmask,&netmask) && setnetconfig)
+	{
+        netif_set_netmask(&netif,&netmask);
+        ip_addr_set(&oldnetmask,&netmask);
+    }
         
-        if (setnetconfig){
-           printf(" * bringing network back up...\n");
-           netif_set_up(&netif);
-           network_print_config();
-        }
+	if(conf.gateway != NULL && ipaddr_aton(conf.gateway,&gateway) && setnetconfig)
+	{
+        netif_set_gw(&netif,&gateway);
+        ip_addr_set(&oldgateway,&gateway); 
+    }
+
+    if (setnetconfig)
+	{
+       printf(" * bringing network back up...\n");
+       netif_set_up(&netif);
+       network_print_config();
+    }
 #endif
-        if(conf.videomode > VIDEO_MODE_AUTO && conf.videomode <= VIDEO_MODE_NTSC && oldvideomode != conf.videomode){
-            oldvideomode = conf.videomode;
-            xenos_init(conf.videomode);
+    if(conf.videomode > VIDEO_MODE_AUTO && conf.videomode <= VIDEO_MODE_NTSC && oldvideomode != conf.videomode){
+        oldvideomode = conf.videomode;
+        xenos_init(conf.videomode);
 	    console_init();
-            printf(" * Xenos re-initalized\n");
-        }
+        printf(" * Xenos re-initalized\n");
+    }
 	
 	if(conf.speedup >= XENON_SPEED_FULL && conf.speedup <= XENON_SPEED_1_3){ //speedmode: drivers/xenon_soc/xenon_power.h
 		printf("Speeding up CPU\n");
 		xenon_make_it_faster(conf.speedup);
 	}
         
-        if(conf.bg_color != console_color[0]){
-                console_set_colors(conf.bg_color,console_color[1]);
-                printf("Set background color to 0x%X\n", conf.bg_color);
-        }
+    if(conf.bg_color != console_color[0]){
+        console_set_colors(conf.bg_color,console_color[1]);
+        printf("Set background color to 0x%X\n", conf.bg_color);
+    }
         
-        if(conf.fg_color != console_color[1]){
-                console_set_colors(console_color[0],conf.fg_color);
-                printf("Set foreground color to 0x%X\n", conf.fg_color);
-        }
+    if(conf.fg_color != console_color[1]){
+        console_set_colors(console_color[0],conf.fg_color);
+        printf("Set foreground color to 0x%X\n", conf.fg_color);
+    }
         
 }
 

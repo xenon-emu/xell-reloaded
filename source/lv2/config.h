@@ -13,6 +13,9 @@
 #define NO_PRINT_CONFIG
 #define NO_NETWORKING
 //#define NO_DVD
+#ifndef NO_NETWORKING
+#define NO_DHCP
+#endif
 
 /* Filesystem drivers */
 

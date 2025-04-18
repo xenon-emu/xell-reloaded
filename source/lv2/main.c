@@ -129,7 +129,7 @@ int main(){
     //do_asciiart();
 
     //delay(3); //give the user a chance to see our splash screen <- network init should last long enough...
-    
+
     xenon_sound_init();
     xenon_make_it_faster(XENON_SPEED_FULL);
 
@@ -150,7 +150,16 @@ int main(){
 #ifndef NO_NETWORKING
 
     printf(" * network init\n");
-    network_init();
+    
+    ip_addr_t ipaddr, netmask, gateway;
+	IP4_ADDR(&ipaddr, 192, 168, 1, 99);
+	IP4_ADDR(&gateway, 192, 168, 1, 1);
+	IP4_ADDR(&netmask, 255, 255, 255, 0);
+#ifdef NO_DHCP
+    network_init(0, ipaddr, netmask, gateway);
+#else
+    network_init(1, ipaddr, netmask, gateway);
+#endif
 
     printf(" * starting httpd server...");
     httpd_start();
@@ -174,7 +183,7 @@ int main(){
 
     console_clrscr();
     printf(" ______________________________________\n|                                      |\n|  XeLL RELOADED - Xenon Linux Loader  |\n|______________________________________|\n"); // Fancy
-    
+
 #ifndef NO_PRINT_CONFIG
     printf("\n * FUSES - write them down and keep them safe:\n");
     char *fusestr = FUSES;
@@ -268,7 +277,7 @@ int main(){
 #else
     printf("\n * Looking for files on local media...\n\n");
 #endif
-    for(;;){
+    for(;;) {
 	    fileloop();
 #ifndef NO_NETWORKING
 	    tftp_loop(); //less likely to find something...

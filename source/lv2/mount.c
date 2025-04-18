@@ -145,7 +145,7 @@ typedef struct {
 	sec_t sector;
 } DEVICE_STRUCT;
 
-#define DEBUG_MOUNTALL
+//#define DEBUG_MOUNTALL
 
 #ifdef DEBUG_MOUNTALL
 #define debug_printf(fmt, args...) \
