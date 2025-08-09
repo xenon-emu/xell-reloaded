@@ -5,21 +5,35 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: free60/libxenon:latest
+    container: free60/toolchain:latest
 
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+
     - name: Export variables
       run: |
         echo DEVKITXENON=/usr/local/xenon >> $GITHUB_ENV
         echo /usr/local/xenon/bin >> $GITHUB_PATH
         echo /usr/local/xenon/usr/bin >> $GITHUB_PATH
-    - name: Build
+
+    - name: Build libxenon from fork
+      run: |
+        echo "[+] Cloning forked libxenon"
+        git clone https://github.com/xenon-emu/libxenon.git /tmp/libxenon
+        cd /tmp/libxenon/toolchain
+        echo "[+] Building libxenon"
+        ./build-xenon-toolchain libxenon || (cat build.log; exit 1)
+        echo "[+] Building dependent libs"
+        ./build-xenon-toolchain libs || (cat build.log; exit 1)
+
+    - name: Build XeLL
       run: make
+
     - name: Build (dist)
       run: make dist
+
     - uses: actions/upload-artifact@v4
       with:
         name: XeLL-binaries
