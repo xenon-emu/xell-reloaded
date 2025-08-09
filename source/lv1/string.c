@@ -19,7 +19,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#if 0
 #ifndef __HAVE_ARCH_STRNICMP
 /**
  * strnicmp - Case insensitive, length-limited string comparison
@@ -29,7 +28,6 @@
  */
 int strnicmp(const char *s1, const char *s2, size_t len)
 {
-	/* Yes, Virginia, it had better be unsigned */
 	unsigned char c1, c2;
 
 	c1 = 0;	c2 = 0;
@@ -51,8 +49,6 @@ int strnicmp(const char *s1, const char *s2, size_t len)
 	}
 	return (int)c1 - (int)c2;
 }
-#endif
-
 #endif
 
 #ifndef __HAVE_ARCH_STRCPY
