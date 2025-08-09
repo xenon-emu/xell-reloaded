@@ -190,7 +190,7 @@ int main(){
     char *cbldvstr = CBLDV;
     char *fgldvstr = FGLDV;
 
-    for (i = 0; i < 12; ++i){
+    for (i = 0; i < 12; ++i) {
 	    u64 line;
 	    unsigned int hi,lo;
 
@@ -244,7 +244,9 @@ int main(){
     } else if (xenon_get_console_type() == 6) {
 	    printf(" * Console: Corona MMC\n");
     } else if (xenon_get_console_type() == 7) {
-	    printf(" * Console: Winchester - how did you get here???\n");
+	    printf(" * Console: Winchester\n");
+    } else if (xenon_get_console_type() == 8) {
+	    printf(" * Console: Winchester MMC\n");
     } else if (xenon_get_console_type() == -1) {
 	    printf(" * Console: Unknown\n");
     }
@@ -270,7 +272,7 @@ int main(){
     //			i = device_list_size;
     //	}
     //}
-    
+
     mount_all_devices();
 #ifndef NO_NETWORKING
     printf("\n * Looking for files on local media and TFTP...\n\n");

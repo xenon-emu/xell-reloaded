@@ -180,22 +180,22 @@ static void AddPartition(sec_t sector, int device, int type, int *devnum) {
 	switch(device)
 	{
 		case DEVICE_USB_0:
-		disc = (DISC_INTERFACE *) & usb2mass_ops_0;
-		break;		
+			disc = (DISC_INTERFACE *) & usb2mass_ops_0;
+			break;
 		case DEVICE_USB_1:
-		disc = (DISC_INTERFACE *) & usb2mass_ops_1;
-		break;		
+			disc = (DISC_INTERFACE *) & usb2mass_ops_1;
+			break;
 		case DEVICE_USB_2:
-		disc = (DISC_INTERFACE *) & usb2mass_ops_2;
-		break;		
+			disc = (DISC_INTERFACE *) & usb2mass_ops_2;
+			break;
 		case DEVICE_ATA:
-		disc = (DISC_INTERFACE *) & xenon_ata_ops;
-		break;		
+			disc = (DISC_INTERFACE *) & xenon_ata_ops;
+			break;
 		case DEVICE_ATAPI:
-		disc = (DISC_INTERFACE *) & xenon_atapi_ops;
-		break;
+			disc = (DISC_INTERFACE *) & xenon_atapi_ops;
+			break;
 		default:
-		return;	
+			return;
 	}
 
 	char mount[10];
@@ -282,16 +282,16 @@ static int FindPartitions(int device) {
 	switch(device){
 		case DEVICE_ATAPI:
 			interface = (DISC_INTERFACE *) & xenon_atapi_ops;
-		break;		
+		break;
 		case DEVICE_ATA:
 		interface = (DISC_INTERFACE *) & xenon_ata_ops;
-		break;		
+		break;
 		case DEVICE_USB_0:
 		interface = (DISC_INTERFACE *) & usb2mass_ops_0;
-		break;		
+		break;
 		case DEVICE_USB_1:
 		interface = (DISC_INTERFACE *) & usb2mass_ops_1;
-		break;		
+		break;
 		case DEVICE_USB_2:
 		interface = (DISC_INTERFACE *) & usb2mass_ops_2;
 		break;
@@ -299,7 +299,7 @@ static int FindPartitions(int device) {
 		default:
 			return -1;
 	}
-		 
+
 
 	MASTER_BOOT_RECORD mbr;
 	PARTITION_RECORD *partition = NULL;
@@ -569,7 +569,7 @@ void mount_all_devices() {
 	FindPartitions(DEVICE_USB_1);
 	FindPartitions(DEVICE_USB_2);
 	mount_usb_device = mount_usb;
-	
+
 	if (hdd_dvd_mounted == 0) //Prevent mounting the DVD and HDD again...
 	{
 		if (xenon_atapi_ops.isInserted()) {
@@ -598,7 +598,7 @@ int findDevices(){
 			//strcpy(device_list[device_list_size],devoptab_list[i]->name);
 			sprintf(device_list[device_list_size], "%s:/", devoptab_list[i]->name);
 			printf("Found: %s\r\n", device_list[device_list_size]);
-			 
+
 			device_list_size++;
 		}
 	}
