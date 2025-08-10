@@ -25,7 +25,11 @@ jobs:
         cd /tmp/libxenon/toolchain
         echo "[+] Building libxenon"
         ./build-xenon-toolchain libxenon || (cat build.log; exit 1)
-        echo "[+] Building dependent libs"
+
+    - name: Build dependent libs
+      run: |
+        cd /tmp/libxenon/toolchain
+        ./build-xenon-toolchain clean
         ./build-xenon-toolchain libs || (cat build.log; exit 1)
 
     - name: Build XeLL
