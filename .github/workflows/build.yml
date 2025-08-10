@@ -30,7 +30,8 @@ jobs:
       run: |
         cd /tmp/libxenon/toolchain
         ./build-xenon-toolchain clean
-        ./build-xenon-toolchain libs || (cat build.log; exit 1)
+        ./build-xenon-toolchain libs
+        cat build.log
 
     - name: Build XeLL
       run: make
